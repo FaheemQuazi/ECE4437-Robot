@@ -3,6 +3,11 @@
  *
  *  Created on: Sep 1, 2021
  *  Author:     faheem
+ *
+ *  Pins:
+ *  - PF1, PF2, PF3 : Onboard LEDs
+ *  - PD0 : HC-05 STATE Pin
+ *  - PE4, PE5 : HC-05 Tx/Rx (UART)
  */
 
 /* Standard libs */
@@ -70,19 +75,18 @@ UART_Handle uart;
 
 // *** Board Initialization Function ***
 void Board_Init() {
-    // ****** GPIO ******
+    // ****** GPIO Init ******
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
     GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
 
-    // ****** Interrupt Configuration (see .cfg for the rest) ******
+    // ****** Interrupt Enable (see cfg for the hwi setup) ******
     GPIOPinTypeGPIOInput(GPIO_PORTD_BASE, GPIO_PIN_0);
     GPIOIntTypeSet(GPIO_PORTD_BASE, GPIO_PIN_0, GPIO_BOTH_EDGES);
     GPIOIntEnable(GPIO_PORTD_BASE, GPIO_PIN_0);
 
-    // ****** UART ******
-    /* Enable and configure the peripherals used by the UART. */
+    // ****** UART Init ******
     SysCtlPeripheralEnable(SYSCTL_PERIPH_UART5);
     GPIOPinConfigure(GPIO_PE4_U5RX);
     GPIOPinConfigure(GPIO_PE5_U5TX);
@@ -100,13 +104,13 @@ void Board_Init() {
     uartParams.baudRate = 9600;
     uart = UART_open(0, &uartParams);
 
-    if (uart == NULL) {
-        // Turn on the LED
+    if (uart == NULL) { // If UART fails
+        // Turn on the RED LED
         GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, 2);
         System_abort("UART Fail");
         return;
     } else {
-        // Turn on the LED
+        // Turn on the GRN LED
         GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 8);
     }
 }
@@ -129,8 +133,7 @@ Void clkLight(UArg arg0) {
         GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 4);
         Semaphore_post(semPrintUart);
     }
-    lightCount++;
-    if (lightCount > 100) {
+    if (lightCount++ > 100) {
         lightCount = 0;
     }
 }
@@ -159,11 +162,9 @@ void tskUartWrite(UArg arg0, UArg arg1) {
 }
 
 // ======== task: BT State Check ========
-int32_t portD = 0;
 void tskBTStatCheck(UArg arg0, UArg arg1) {
     while (true) {
         Semaphore_pend(semBTStatCheck, BIOS_WAIT_FOREVER); // wait for semaphore
-        portD = GPIOPinRead(GPIO_PORTD_BASE, GPIO_PIN_0);
-        BT_ENABLE = portD & GPIO_PIN_0;
+        BT_ENABLE = GPIOPinRead(GPIO_PORTD_BASE, GPIO_PIN_0) & GPIO_PIN_0;
     }
 }
