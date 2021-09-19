@@ -8,14 +8,15 @@
 
 # Project Level
 
-/*/Debug/**
-/*/Release/**
-/*/config/**
-/*/.launches/**
-/*/targetConfigs/**
-/*/src/**
-/*/.settings/**
-  
+Debug/
+Release/
+config/
+.config/
+.launches/
+targetConfigs/
+src/
+.settings/
+ 
 # Object files
 *.o
 *.ko
@@ -46,3 +47,7 @@
 *.x86_64
 *.hex
 *.o
+
+# System Files
+.DS_Store
+
