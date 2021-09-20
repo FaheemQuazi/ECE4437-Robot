@@ -6,7 +6,7 @@
  *
  *  Pins:
  *  - PF1, PF2, PF3 : Onboard LEDs
- *  - PD0 : HC-05 STATE Pin
+ *  - PB3 : HC-05 STATE Pin
  *  - PE4, PE5 : HC-05 Tx/Rx (UART)
  */
 
@@ -76,15 +76,17 @@ UART_Handle uart;
 // *** Board Initialization Function ***
 void Board_Init() {
     // ****** GPIO Init ******
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
     GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
 
+
     // ****** Interrupt Enable (see cfg for the hwi setup) ******
-    GPIOPinTypeGPIOInput(GPIO_PORTD_BASE, GPIO_PIN_0);
-    GPIOIntTypeSet(GPIO_PORTD_BASE, GPIO_PIN_0, GPIO_BOTH_EDGES);
-    GPIOIntEnable(GPIO_PORTD_BASE, GPIO_PIN_0);
+    // For BT STATE
+    GPIOPinTypeGPIOInput(GPIO_PORTB_BASE, GPIO_PIN_3);
+    GPIOIntTypeSet(GPIO_PORTB_BASE, GPIO_PIN_3, GPIO_BOTH_EDGES);
+    GPIOIntEnable(GPIO_PORTB_BASE, GPIO_PIN_3);
 
     // ****** UART Init ******
     SysCtlPeripheralEnable(SYSCTL_PERIPH_UART5);
@@ -127,14 +129,9 @@ Int main(void)
 // ======== light flash clock routine ========
 int lightCount = 0;
 Void clkLight(UArg arg0) {
-    if (lightCount % 2 == 0) {
-        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 0);
-    } else {
-        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 4);
-        Semaphore_post(semPrintUart);
-    }
-    if (lightCount++ > 100) {
+    if (lightCount++ > 50) {
         lightCount = 0;
+        Semaphore_post(semPrintUart);
     }
 }
 
@@ -142,21 +139,45 @@ Void clkLight(UArg arg0) {
 uint8_t BT_ENABLE = false;
 void hwiBtEnable() {
     // Clear the Interrupt Status immediately
-    uint32_t status = GPIOIntStatus(GPIO_PORTD_BASE, true);
-    GPIOIntClear(GPIO_PORTD_BASE, status);
+    uint32_t status = GPIOIntStatus(GPIO_PORTB_BASE, true);
+    GPIOIntClear(GPIO_PORTB_BASE, status);
 
     // Post Semaphore to handle bluetooth status check
     Semaphore_post(semBTStatCheck);
 }
 
+
+// ======== task: UART Read ========
+unsigned char rxBuffer[1];
+int readSize;
+void tskUartRead(UArg arg0, UArg arg1) {
+    uint8_t pinstat = 0;
+    while (true) {
+        readSize = UART_read(uart, rxBuffer, sizeof(rxBuffer));
+        UART_write(uart, rxBuffer, sizeof(rxBuffer));
+        if (readSize > 0) {
+            if (rxBuffer[0] == 'r') {
+                pinstat ^= GPIO_PIN_1;
+            } else if (rxBuffer[0] == 'g') {
+                pinstat ^= GPIO_PIN_3;
+            } else if (rxBuffer[0] == 'b') {
+                pinstat ^= GPIO_PIN_2;
+            }
+            GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, pinstat);
+            Semaphore_post(semPrintUart);
+        }
+    }
+}
+
 // ======== task: UART Write ========
 char echoPrompt[32];
+int echoPromptSize = 0;
 void tskUartWrite(UArg arg0, UArg arg1) {
     while (true) {
         Semaphore_pend(semPrintUart, BIOS_WAIT_FOREVER); // wait for semaphore
         if (BT_ENABLE) {
-            sprintf(echoPrompt, "WALL-E GO BRRRR %u\r\n", lightCount);
-            UART_write(uart, echoPrompt, sizeof(echoPrompt));
+            echoPromptSize = sprintf(echoPrompt, "WALL-E GO BRRRR %u\r\n", lightCount);
+            UART_write(uart, echoPrompt, echoPromptSize);
         }
     }
 }
@@ -165,6 +186,6 @@ void tskUartWrite(UArg arg0, UArg arg1) {
 void tskBTStatCheck(UArg arg0, UArg arg1) {
     while (true) {
         Semaphore_pend(semBTStatCheck, BIOS_WAIT_FOREVER); // wait for semaphore
-        BT_ENABLE = GPIOPinRead(GPIO_PORTD_BASE, GPIO_PIN_0) & GPIO_PIN_0;
+        BT_ENABLE = GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_3) & GPIO_PIN_3;
     }
 }
