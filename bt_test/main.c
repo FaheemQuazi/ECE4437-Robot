@@ -1,191 +1,92 @@
 /*
  *  ======= main ========
  *
- *  Created on: Sep 1, 2021
+ *  Created on: Sep 27, 2021
  *  Author:     faheem
  *
  *  Pins:
  *  - PF1, PF2, PF3 : Onboard LEDs
- *  - PB3 : HC-05 STATE Pin
- *  - PE4, PE5 : HC-05 Tx/Rx (UART)
+ *  - PE4 : TX pin of HC-05 or BLUESMiRF
+ *  - PE5 : RX pin of HC-05 or BLUESMiRF
  */
 
-/* Standard libs */
+/* Standard C Libraries */
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
 
 /* Constants */
-#include <inc/hw_ints.h>
+// This one gives all the GPIO_PORTx_BASE variables and the UARTx_BASE variables
 #include <inc/hw_memmap.h>
-#include <inc/hw_types.h>
-#include <inc/hw_gpio.h>
-
-/* XDC */
-#include <xdc/runtime/System.h>
-#include <xdc/runtime/Log.h>                //needed for any Log_info() call
-#include <xdc/cfg/global.h>
 
 /* DriverLib */
+// All the SysCtl Functions
 #include <driverlib/sysctl.h>
+// Adds more constants like GPIO_PE4_U5RX and GPIO_PE4_U5TX for configuring pins
 #include <driverlib/pin_map.h>
+// GPIO Peripheral Driver Library
 #include <driverlib/gpio.h>
+// UART Peripheral Driver Library
 #include <driverlib/uart.h>
 
-/* TI-RTOS BIOS  */
-#include <ti/sysbios/BIOS.h>
-#include <ti/sysbios/knl/Task.h>
-
-/* TI-RTOS Peripherals */
-#include <ti/drivers/GPIO.h>
-#include <ti/drivers/UART.h>
-#include <ti/drivers/uart/UARTTiva.h>
-
-
-/*
- * ======== Hardware Configuration ========
- */
-
-/* *** UART Configuration *** */
-// From the uartecho Example
-// use PE4 and PE5 (UART5)
-UARTTiva_Object uartTivaObjects[1];
-unsigned char uartTivaRingBuffer[1][32];
-// UART configuration structures
-const UARTTiva_HWAttrs uartTivaHWAttrs[1] = {
-    {
-        .baseAddr = UART5_BASE,
-        .intNum = INT_UART5,
-        .intPriority = (~0),
-        .flowControl = UART_FLOWCONTROL_NONE,
-        .ringBufPtr  = uartTivaRingBuffer[0],
-        .ringBufSize = sizeof(uartTivaRingBuffer[0])
-    }
-};
-const UART_Config UART_config[] = {
-    {
-        .fxnTablePtr = &UARTTiva_fxnTable,
-        .object = &uartTivaObjects[0],
-        .hwAttrs = &uartTivaHWAttrs[0]
-    },
-    {NULL, NULL, NULL}
-};
-// UART module handle
-UART_Handle uart;
+// Set the baud rate with this variable (referenced below)
+// HC-05: 9600 | BLUESMiRF: 115200
+#define UART_BAUDRATE 9600
 
 // *** Board Initialization Function ***
 void Board_Init() {
-    // ****** GPIO Init ******
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
+    // ****** GPIO Initialization ******
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
     GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
 
 
-    // ****** Interrupt Enable (see cfg for the hwi setup) ******
-    // For BT STATE
-    GPIOPinTypeGPIOInput(GPIO_PORTB_BASE, GPIO_PIN_3);
-    GPIOIntTypeSet(GPIO_PORTB_BASE, GPIO_PIN_3, GPIO_BOTH_EDGES);
-    GPIOIntEnable(GPIO_PORTB_BASE, GPIO_PIN_3);
-
-    // ****** UART Init ******
+    // ****** UART GPIO Pin Configuration ******
     SysCtlPeripheralEnable(SYSCTL_PERIPH_UART5);
     GPIOPinConfigure(GPIO_PE4_U5RX);
     GPIOPinConfigure(GPIO_PE5_U5TX);
     GPIOPinTypeUART(GPIO_PORTE_BASE, GPIO_PIN_4 | GPIO_PIN_5);
-    UART_init();
 
-    /* Configure the UART Module */
-    UART_Params uartParams;
-    /* Create a UART with data processing off. */
-    UART_Params_init(&uartParams);
-    uartParams.writeDataMode = UART_DATA_BINARY;
-    uartParams.readDataMode = UART_DATA_BINARY;
-    uartParams.readReturnMode = UART_RETURN_FULL;
-    uartParams.readEcho = UART_ECHO_OFF;
-    uartParams.baudRate = 9600;
-    uart = UART_open(0, &uartParams);
 
-    if (uart == NULL) { // If UART fails
-        // Turn on the RED LED
-        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, 2);
-        System_abort("UART Fail");
-        return;
-    } else {
-        // Turn on the GRN LED
-        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 8);
-    }
+    // ****** UART Module Configuration ******
+    // See the peripheral driver documentation for how to use this function
+    // UART_BAUDRATE is set in a #define above
+    UARTConfigSetExpClk(UART5_BASE, SysCtlClockGet(), UART_BAUDRATE,
+        (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE |
+        UART_CONFIG_PAR_NONE));
+
+    // Enable the UART Module
+    UARTEnable(UART5_BASE);
+
+    // Turn on the green light so we know it's running
+    GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 8);
 }
 
 // ======== main ========
-Int main(void)
+int main(void)
 {
     Board_Init();
 
-    BIOS_start();
-    return (0);
-}
+    uint8_t pinstat = 0; // store the LED states in binary here
+    char c; // store the char we receive from the UART here
+    while(1) {
 
-// ======== light flash clock routine ========
-int lightCount = 0;
-Void clkLight(UArg arg0) {
-    if (lightCount++ > 50) {
-        lightCount = 0;
-        Semaphore_post(semPrintUart);
-    }
-}
+        // This line will wait until a character is received on the UART
+        c = UARTCharGet(UART5_BASE);
 
-// ======== hwi: bluetooth STATE pin ========
-uint8_t BT_ENABLE = false;
-void hwiBtEnable() {
-    // Clear the Interrupt Status immediately
-    uint32_t status = GPIOIntStatus(GPIO_PORTB_BASE, true);
-    GPIOIntClear(GPIO_PORTB_BASE, status);
+        // send the character back over the UART for feedback
+        UARTCharPut(UART5_BASE, c);
 
-    // Post Semaphore to handle bluetooth status check
-    Semaphore_post(semBTStatCheck);
-}
-
-
-// ======== task: UART Read ========
-unsigned char rxBuffer[1];
-int readSize;
-void tskUartRead(UArg arg0, UArg arg1) {
-    uint8_t pinstat = 0;
-    while (true) {
-        readSize = UART_read(uart, rxBuffer, sizeof(rxBuffer));
-        UART_write(uart, rxBuffer, sizeof(rxBuffer));
-        if (readSize > 0) {
-            if (rxBuffer[0] == 'r') {
-                pinstat ^= GPIO_PIN_1;
-            } else if (rxBuffer[0] == 'g') {
-                pinstat ^= GPIO_PIN_3;
-            } else if (rxBuffer[0] == 'b') {
-                pinstat ^= GPIO_PIN_2;
-            }
-            GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, pinstat);
-            Semaphore_post(semPrintUart);
+        // Toggle a byte in the pinstat variable based on which char was sent
+        if (c == 'r') {
+            pinstat ^= GPIO_PIN_1;
+        } else if (c == 'g') {
+            pinstat ^= GPIO_PIN_3;
+        } else if (c == 'b') {
+            pinstat ^= GPIO_PIN_2;
         }
-    }
-}
 
-// ======== task: UART Write ========
-char echoPrompt[32];
-int echoPromptSize = 0;
-void tskUartWrite(UArg arg0, UArg arg1) {
-    while (true) {
-        Semaphore_pend(semPrintUart, BIOS_WAIT_FOREVER); // wait for semaphore
-        if (BT_ENABLE) {
-            echoPromptSize = sprintf(echoPrompt, "WALL-E GO BRRRR %u\r\n", lightCount);
-            UART_write(uart, echoPrompt, echoPromptSize);
-        }
-    }
-}
-
-// ======== task: BT State Check ========
-void tskBTStatCheck(UArg arg0, UArg arg1) {
-    while (true) {
-        Semaphore_pend(semBTStatCheck, BIOS_WAIT_FOREVER); // wait for semaphore
-        BT_ENABLE = GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_3) & GPIO_PIN_3;
+        // Set all three GPIO LED pins on or off at the same time
+        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, pinstat);
     }
 }
