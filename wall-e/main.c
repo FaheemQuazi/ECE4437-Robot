@@ -43,6 +43,7 @@ void Board_Init() {
     // ****** GPIO Init ******
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
     GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
+
     BT_Init();
 }
 

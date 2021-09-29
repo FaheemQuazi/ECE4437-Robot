@@ -36,12 +36,12 @@
 // *** Board Initialization Function ***
 void Board_Init() {
     // ****** GPIO Initialization ******
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
     GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
 
 
     // ****** UART GPIO Pin Configuration ******
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);
     SysCtlPeripheralEnable(SYSCTL_PERIPH_UART5);
     GPIOPinConfigure(GPIO_PE4_U5RX);
     GPIOPinConfigure(GPIO_PE5_U5TX);

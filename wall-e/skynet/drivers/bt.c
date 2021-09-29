@@ -21,7 +21,7 @@ void BT_Init() {
 
 // ======== task: UART Read ========
 void tskBTRead(UArg arg0, UArg arg1) {
-    uint8_t pinstat = 0; // store the LED states in binary here
+    uint8_t pinstate = 0; // store the LED states in binary here
     char c; // store the char we receive from the UART here
     while(1) {
 
@@ -31,16 +31,16 @@ void tskBTRead(UArg arg0, UArg arg1) {
         // send the character back over the UART for feedback
         UARTCharPut(UART5_BASE, c);
 
-        // Toggle a byte in the pinstat variable based on which char was sent
+        // Toggle a byte in the pinstate variable based on which char was sent
         if (c == 'r') {
-            pinstat ^= GPIO_PIN_1;
+            pinstate ^= GPIO_PIN_1;
         } else if (c == 'g') {
-            pinstat ^= GPIO_PIN_3;
+            pinstate ^= GPIO_PIN_3;
         } else if (c == 'b') {
-            pinstat ^= GPIO_PIN_2;
+            pinstate ^= GPIO_PIN_2;
         }
 
         // Set all three GPIO LED pins on or off at the same time
-        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, pinstat);
+        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, pinstate);
     }
 }
