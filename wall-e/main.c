@@ -36,7 +36,11 @@
 /* TI-RTOS BIOS  */
 #include <ti/sysbios/BIOS.h>
 
+/* Our code */
 #include "skynet/drivers/bt.h"
+#include "skynet/drivers/motor.h"
+#include "skynet/drivers/motor.h"
+
 
 // *** Board Initialization Function ***
 void Board_Init() {
@@ -45,6 +49,7 @@ void Board_Init() {
     GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
 
     BT_Init();
+    Motor_Init();
 }
 
 /*
