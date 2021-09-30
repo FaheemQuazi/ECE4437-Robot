@@ -14,66 +14,31 @@
  *
  */
 
-/* Standard libs */
-#include <stdio.h>
-#include <stdint.h>
-#include <stdbool.h>
-
-/* Constants */
-#include <inc/hw_memmap.h>
-#include "skynet/config.h"
-
 /* XDC */
 #include <xdc/runtime/System.h>
-#include <xdc/runtime/Log.h>
-#include <xdc/cfg/global.h>
-
-/* DriverLib */
-#include <driverlib/sysctl.h>
-#include <driverlib/gpio.h>
-#include <driverlib/pin_map.h>
 
 /* TI-RTOS BIOS  */
 #include <ti/sysbios/BIOS.h>
 
 /* Our code */
+#include "skynet/drivers/led.h"
 #include "skynet/drivers/bt.h"
 #include "skynet/drivers/motor.h"
-#include "skynet/drivers/motor.h"
+#include "skynet/drivers/lightsensor.h"
+#include "skynet/framework/cmd.h"
 
 
 // *** Board Initialization Function ***
 void Board_Init() {
-    // ****** GPIO Init ******
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
-    GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
-
+    LED_Init();
     BT_Init();
     Motor_Init();
 }
 
-/*
- * ======== main ========
- */
+// *** Main ***
 int main(void)
 {
     Board_Init();
     BIOS_start();
     return (0);
 }
-
-// ======== blink LED clock routine ========
-int lightCount = 0;
-Void clkLight(UArg arg0) {
-    if (lightCount % 2 == 0) {
-        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 14);
-    } else {
-        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 0);
-    }
-    if (lightCount++ > 10) {
-        lightCount = 0;
-    }
-}
-
-
-
