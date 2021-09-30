@@ -19,28 +19,47 @@ void BT_Init() {
     UARTEnable(UART5_BASE);
 }
 
+void BT_PrintString(char str[]) {
+    int i = 0;
+    for (i = 0; i < strlen(str); i++) {
+        UARTCharPut(UART5_BASE, str[i]);
+    }
+}
+
 // ======== task: UART Read ========
 void tskBTRead(UArg arg0, UArg arg1) {
-    uint8_t pinstate = 0; // store the LED states in binary here
-    char c; // store the char we receive from the UART here
+    char rc[8];
+    uint8_t p = 0;
+    char r;
+
+    UARTCharPut(UART5_BASE, '>');
     while(1) {
 
         // This line will wait until a character is received on the UART
-        c = UARTCharGet(UART5_BASE);
+        r = UARTCharGet(UART5_BASE);
 
-        // send the character back over the UART for feedback
-        UARTCharPut(UART5_BASE, c);
-
-        // Toggle a byte in the pinstate variable based on which char was sent
-        if (c == 'r') {
-            pinstate ^= GPIO_PIN_1;
-        } else if (c == 'g') {
-            pinstate ^= GPIO_PIN_3;
-        } else if (c == 'b') {
-            pinstate ^= GPIO_PIN_2;
+        if (r == '\r') {
+            if (strlen(rc) > 0) {
+                UARTCharPut(UART5_BASE, '!');
+                if (CMD_Dispatch(rc)) {
+                    BT_PrintString("OK\r\n>");
+                } else {
+                    BT_PrintString("NC\r\n>");
+                }
+                p = 0;
+                rc[0] = '\0';
+            }
+        } else {
+            if (r == 8 && p > 0) {
+                p--;
+                rc[p] = '\0';
+                BT_PrintString("\b\e[0K");
+            } else if (p <= 6) {
+                // we have room for a char
+                rc[p] = r;
+                rc[++p] = '\0';
+                UARTCharPut(UART5_BASE, r);
+            }
         }
-
-        // Set all three GPIO LED pins on or off at the same time
-        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, pinstate);
     }
 }
