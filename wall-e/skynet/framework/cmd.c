@@ -8,31 +8,40 @@
 #include "cmd.h"
 
 COMMAND CMD_defs[] = {
-    { "ledr", 5, &LED_ToggleR },
-    { "ledg", 5, &LED_ToggleG },
-    { "ledb", 5, &LED_ToggleB },
-    { "test", 3, &CMD_DoNothing}
+    { "ledr", &LED_ToggleR },
+    { "ledg", &LED_ToggleG },
+    { "ledb", &LED_ToggleB },
+    { "dist", &Dist_Print },
+    { "test", &CMD_DoNothing}
 };
 
 
 void CMD_DoNothing(UArg arg0, UArg arg1) {}
 
-bool CMD_Dispatch(char name[]) {
+void tskCMDDispatcher(UArg arg0, UArg arg1) {
+    const int s = sizeof(CMD_defs);
     int i = 0;
-    for (i = 0; i < sizeof(CMD_defs); i++) {
-        COMMAND sc = CMD_defs[i];
-        if (strcmp(sc.name, name) == 0) {
-            Task_Handle tskCmdH;
-            Task_Params tskCmdP;
+    char name[8];
+    while (true) {
+        Mailbox_pend(mbxCmd, &name, BIOS_WAIT_FOREVER);
 
-            Task_Params_init(&tskCmdP);
-            tskCmdP.priority = sc.prio;
+        for (i = 0; i < s; i++) {
+            COMMAND sc = CMD_defs[i];
+            if (strcmp(sc.name, name) == 0) {
+                // TODO: Dispatch command as task
+                (*sc.fun_ptr)(NULL, NULL);
+                break;
+            }
+        }
 
-            tskCmdH = Task_create(sc.fun_ptr, &tskCmdP, NULL);
-
-            Task_delete(&tskCmdH);
-            return true;
+        if (i < s) {
+            BT_PrintString("< ");
+            BT_PrintString(name);
+            BT_PrintString(" OK\r\n");
+        } else {
+            BT_PrintString("< ");
+            BT_PrintString(name);
+            BT_PrintString(" NC\r\n");
         }
     }
-    return false;
 }

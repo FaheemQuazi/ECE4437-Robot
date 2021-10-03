@@ -16,6 +16,7 @@
 
 /* XDC */
 #include <xdc/runtime/System.h>
+#include <xdc/runtime/Log.h>
 
 /* TI-RTOS BIOS  */
 #include <ti/sysbios/BIOS.h>
@@ -33,6 +34,7 @@ void Board_Init() {
     LED_Init();
     BT_Init();
     Motor_Init();
+    Dist_Init();
 }
 
 // *** Main ***

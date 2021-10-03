@@ -32,7 +32,9 @@ void tskBTRead(UArg arg0, UArg arg1) {
     uint8_t p = 0;
     char r;
 
+    rc[0] = '\0';
     UARTCharPut(UART5_BASE, '>');
+
     while(1) {
 
         // This line will wait until a character is received on the UART
@@ -40,26 +42,31 @@ void tskBTRead(UArg arg0, UArg arg1) {
 
         if (r == '\r') {
             if (strlen(rc) > 0) {
-                UARTCharPut(UART5_BASE, '!');
-                if (CMD_Dispatch(rc)) {
-                    BT_PrintString("OK\r\n>");
-                } else {
-                    BT_PrintString("NC\r\n>");
-                }
+                BT_PrintString("\r\n");
+                Mailbox_post(mbxCmd, &rc, BIOS_NO_WAIT);
                 p = 0;
                 rc[0] = '\0';
             }
+            BT_PrintString("\r\n>");
         } else {
-            if (r == 8 && p > 0) {
-                p--;
-                rc[p] = '\0';
-                BT_PrintString("\b\e[0K");
-            } else if (p <= 6) {
-                // we have room for a char
-                rc[p] = r;
-                rc[++p] = '\0';
-                UARTCharPut(UART5_BASE, r);
+            switch (r) {
+            case '\b':
+                if (p > 0) {
+                    p--;
+                    rc[p] = '\0';
+                    BT_PrintString("\b\e[0K"); // \b = backspace ; \e[0K clears the characters to the right of the cursor
+                }
+                break;
+            default:
+                if (p <= 6) {
+                    // we have room for a char
+                    rc[p] = r;
+                    rc[++p] = '\0';
+                    UARTCharPut(UART5_BASE, r);
+                }
+                break;
             }
         }
+
     }
 }
