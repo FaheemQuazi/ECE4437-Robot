@@ -15,6 +15,7 @@
 
 /* XDC */
 #include <xdc/runtime/System.h>
+#include <ti/sysbios/knl/Mailbox.h>
 
 /* DriverLib */
 #include <driverlib/sysctl.h>
@@ -26,6 +27,7 @@
 
 
 void BT_Init();
+void BT_PrintString(char str[]);
 
 void tskBTRead(UArg arg0, UArg arg1);
 
