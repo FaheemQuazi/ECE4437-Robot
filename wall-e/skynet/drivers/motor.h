@@ -26,8 +26,17 @@
 #include <driverlib/pin_map.h>
 #include <driverlib/pwm.h>
 
+#include "driverlib/uart.h"
+#include "inc/hw_types.h"
+#include "inc/hw_gpio.h"
+#include "inc/hw_memmap.h"
+
 
 void Motor_Init();
-
+void Motor_Stop(UArg, UArg);
+void Motor_Forward(UArg, UArg);
+void Motor_TurnR(UArg, UArg);
+void Motor_TurnL(UArg, UArg);
+void Motor_Reverse(UArg, UArg);
 
 #endif /* SKYNET_DRIVERS_MOTOR_H_ */

@@ -7,12 +7,18 @@
 
 #include "cmd.h"
 
+
 COMMAND CMD_defs[] = {
     { "ledr", &LED_ToggleR },
     { "ledg", &LED_ToggleG },
     { "ledb", &LED_ToggleB },
     { "dist", &Dist_Print },
-    { "test", &CMD_DoNothing}
+    { "test", &CMD_DoNothing},
+    { "mtm", &Motor_Forward },
+    { "mts", &Motor_Stop },
+    { "tr", &Motor_TurnR },
+    { "tl", &Motor_TurnL },
+    { "rev", &Motor_Reverse }
 };
 
 
