@@ -51,7 +51,12 @@ void clkDistTrigger() {
 
 void Dist_Print(UArg arg0, UArg arg1) {
     char *out = (char *)malloc(16*sizeof(char));
-    sprintf(out, "%u,%u\r\n", DistF,DistR);
+
+    float DR_CM = 4544.5 * pow((float)DistR,-0.834);
+
+    float DF_CM = 10754 * pow((float)DistF,-0.953);
+
+    sprintf(out, "%0.1f,%0.1f\r\n", DF_CM, DR_CM);
     BT_PrintString(out);
     free(out);
 }

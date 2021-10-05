@@ -13,6 +13,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <math.h>
 
 /* Constants */
 #include <inc/hw_memmap.h>
