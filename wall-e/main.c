@@ -11,6 +11,10 @@
  *  - PE5: UART TX -> BT RX
  *  - PD0: AIN7    -> Dist R
  *  - PD1: AIN6    -> Dist F
+ *  - PC4: PWM6    -> Left Motor A-Enable
+ *  - PC5: PWM7    -> Right Motor B-Enable
+ *  - PC7: GPIO DO -> Right Motor B-Phase
+ *  - PC6: GPIO DO -> Left Motor A-Phase
  *
  */
 
