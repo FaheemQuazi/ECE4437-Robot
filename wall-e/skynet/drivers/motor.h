@@ -31,6 +31,8 @@
 #include "inc/hw_gpio.h"
 #include "inc/hw_memmap.h"
 
+uint16_t Motor_Duty;
+uint32_t Motor_Val_Load, Motor_pwm_clk;
 
 void Motor_Init();
 void Motor_Stop(UArg, UArg);
@@ -38,5 +40,9 @@ void Motor_Forward(UArg, UArg);
 void Motor_TurnR(UArg, UArg);
 void Motor_TurnL(UArg, UArg);
 void Motor_Reverse(UArg, UArg);
+void MotorSpdUp(UArg, UArg);
+void MotorSpdDown(UArg, UArg);
+void Motor_setspd_L(uint32_t);
+void Motor_setspd_R(uint32_t);
 
 #endif /* SKYNET_DRIVERS_MOTOR_H_ */

@@ -18,7 +18,9 @@ COMMAND CMD_defs[] = {
     { "mts", &Motor_Stop },
     { "tr", &Motor_TurnR },
     { "tl", &Motor_TurnL },
-    { "rev", &Motor_Reverse }
+    { "rev", &Motor_Reverse },
+    { "fast", &MotorSpdUp },
+    { "slow", &MotorSpdDown }
 };
 
 
