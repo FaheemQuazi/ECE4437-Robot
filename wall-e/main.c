@@ -31,6 +31,7 @@
 #include "skynet/drivers/motor.h"
 #include "skynet/drivers/lightsensor.h"
 #include "skynet/framework/cmd.h"
+#include "skynet/framework/pid.h"
 
 
 // *** Board Initialization Function ***

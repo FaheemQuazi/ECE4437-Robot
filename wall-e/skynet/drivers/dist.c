@@ -48,6 +48,14 @@ void clkDistTrigger() {
     ADCSequenceDataGet(ADC1_BASE, 3, &DistR);
 }
 
+float Dist_GetRCM() {
+    return 4544.5 * pow((float)DistR,-0.834);
+}
+
+float Dist_GetFCM() {
+    return 10754 * pow((float)DistF,-0.953);
+}
+
 
 void Dist_Print(UArg arg0, UArg arg1) {
     char *out = (char *)malloc(16*sizeof(char));

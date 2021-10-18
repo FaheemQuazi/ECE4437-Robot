@@ -37,6 +37,9 @@ void Dist_Init();
 void clkDistTrigger();
 void hwiDistF();
 
+float Dist_GetRCM();
+float Dist_GetFCM();
+
 void Dist_Print(UArg, UArg);
 
 
