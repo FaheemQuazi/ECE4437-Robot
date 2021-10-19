@@ -49,11 +49,17 @@ void clkDistTrigger() {
 }
 
 float Dist_GetRCM() {
-    return 4544.5 * pow((float)DistR,-0.834);
+    float DR = 4544.5 * pow((float)DistR,-0.834);
+    if (DR < 4.1) DR = 4.1;
+    if (DR > 15) DR = 15;
+    return DR;
 }
 
 float Dist_GetFCM() {
-    return 10754 * pow((float)DistF,-0.953);
+    float DR = 10754 * pow((float)DistF,-0.953);
+    if (DR < 4.1) DR = 4.1;
+    if (DR > 15) DR = 15;
+    return DR;
 }
 
 

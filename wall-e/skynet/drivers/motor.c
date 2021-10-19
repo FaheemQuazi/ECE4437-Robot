@@ -90,23 +90,17 @@ void Motor_Reverse(UArg arg0, UArg arg1){
 }
 
 void Motor_setspd_L(uint32_t Motor_DutyL){
-
-        if(Motor_DutyL >= 10 && Motor_DutyL <= 90){
-
-            PWMPulseWidthSet(PWM0_BASE, PWM_OUT_6, Motor_DutyL*Motor_Val_Load/100);
-        }
+    if (Motor_DutyL > 90)  Motor_DutyL = 90;
+    if (Motor_DutyL & 0x80000000 == 0x80000000) Motor_DutyL = 0;
+    PWMPulseWidthSet(PWM0_BASE, PWM_OUT_7, Motor_DutyL*Motor_Val_Load/100);
 
 
 }
 
 void Motor_setspd_R(uint32_t Motor_DutyR){
-
-        if(Motor_DutyR >= 10 && Motor_DutyR <= 90){
-
-            PWMPulseWidthSet(PWM0_BASE, PWM_OUT_7, Motor_DutyR*Motor_Val_Load/100);
-        }
-
-
+    if (Motor_DutyR > 90)  Motor_DutyR = 90;
+    if (Motor_DutyR & 0x80000000 == 0x80000000) Motor_DutyR = 0;
+    PWMPulseWidthSet(PWM0_BASE, PWM_OUT_6, Motor_DutyR*Motor_Val_Load/100);
 }
 
 void MotorSpdUp(UArg arg0, UArg arg1){

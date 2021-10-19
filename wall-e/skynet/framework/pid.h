@@ -32,14 +32,16 @@
 #include "driverlib/adc.h"
 #include "driverlib/i2c.h"
 
+#include "skynet/drivers/dist.h"
+#include "skynet/drivers/motor.h"
 
 #define SETPOINT 6
-#define P_MULT 0.1
-#define I_MULT 0.05
-#define D_MULT 0.05
+#define P_MULT 10
+#define I_MULT 5
+#define D_MULT 5
 
-
-void RunPIDController(void);
+void PID_Init();
+void RunPIDController();
 
 
 
