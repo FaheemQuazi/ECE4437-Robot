@@ -44,5 +44,7 @@ void MotorSpdUp(UArg, UArg);
 void MotorSpdDown(UArg, UArg);
 void Motor_setspd_L(uint32_t);
 void Motor_setspd_R(uint32_t);
+void Motor_setdir_L(Bool);
+void Motor_setdir_R(Bool);
 
 #endif /* SKYNET_DRIVERS_MOTOR_H_ */

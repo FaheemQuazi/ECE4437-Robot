@@ -91,14 +91,30 @@ void Motor_Reverse(UArg arg0, UArg arg1){
 
 void Motor_setspd_L(uint32_t Motor_DutyL){
     if (Motor_DutyL > 90)  Motor_DutyL = 90;
-    if (Motor_DutyL & 0x80000000 == 0x80000000) Motor_DutyL = 0;
+    if ((int32_t)Motor_DutyL < 0) Motor_DutyL = 0;
     PWMPulseWidthSet(PWM0_BASE, PWM_OUT_7, Motor_DutyL*Motor_Val_Load/100);
 }
 
 void Motor_setspd_R(uint32_t Motor_DutyR){
-    if (Motor_DutyR > 90)  Motor_DutyR = 90;
-    if (Motor_DutyR & 0x80000000 == 0x80000000) Motor_DutyR = 0;
+    if (Motor_DutyR > 90) Motor_DutyR = 90;
+    if ((int32_t)Motor_DutyR < 0) Motor_DutyR = 0;
     PWMPulseWidthSet(PWM0_BASE, PWM_OUT_6, Motor_DutyR*Motor_Val_Load/100);
+}
+
+void Motor_setdir_L(Bool d) { // false is reverse
+    if (d) {
+        GPIOPinWrite(GPIO_PORTC_BASE, GPIO_PIN_7, 0);
+    } else {
+        GPIOPinWrite(GPIO_PORTC_BASE, GPIO_PIN_7, GPIO_PIN_7);
+    }
+}
+
+void Motor_setdir_R(Bool d) { // false is reverse
+    if (d) {
+        GPIOPinWrite(GPIO_PORTC_BASE, GPIO_PIN_6, 0);
+    } else {
+        GPIOPinWrite(GPIO_PORTC_BASE, GPIO_PIN_6, GPIO_PIN_6);
+    }
 }
 
 void MotorSpdUp(UArg arg0, UArg arg1){
