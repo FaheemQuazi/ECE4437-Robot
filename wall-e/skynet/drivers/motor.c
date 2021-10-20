@@ -101,7 +101,7 @@ void Motor_setspd_R(uint32_t Motor_DutyR){
     PWMPulseWidthSet(PWM0_BASE, PWM_OUT_6, Motor_DutyR*Motor_Val_Load/100);
 }
 
-void Motor_setdir_L(Bool d) { // false is reverse
+void Motor_setdir_R(Bool d) { // false is reverse
     if (d) {
         GPIOPinWrite(GPIO_PORTC_BASE, GPIO_PIN_7, 0);
     } else {
@@ -109,7 +109,7 @@ void Motor_setdir_L(Bool d) { // false is reverse
     }
 }
 
-void Motor_setdir_R(Bool d) { // false is reverse
+void Motor_setdir_L(Bool d) { // false is reverse
     if (d) {
         GPIOPinWrite(GPIO_PORTC_BASE, GPIO_PIN_6, 0);
     } else {

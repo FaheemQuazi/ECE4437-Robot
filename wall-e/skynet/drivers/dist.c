@@ -35,8 +35,7 @@ void Dist_Init() {
 
 }
 
-
-void clkDistTrigger() {
+void swiDistTrigger() {
     // Front Sensor
     ADCProcessorTrigger(ADC0_BASE, 3);
     ADCIntClear(ADC0_BASE, 3);
@@ -46,6 +45,10 @@ void clkDistTrigger() {
     ADCProcessorTrigger(ADC1_BASE, 3);
     ADCIntClear(ADC1_BASE, 3);
     ADCSequenceDataGet(ADC1_BASE, 3, &DistR);
+}
+
+void clkDistTrigger() {
+    Swi_post(swiDist);
 }
 
 uint16_t Dist_GetR() {
