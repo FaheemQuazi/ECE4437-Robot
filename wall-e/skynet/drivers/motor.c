@@ -93,8 +93,6 @@ void Motor_setspd_L(uint32_t Motor_DutyL){
     if (Motor_DutyL > 90)  Motor_DutyL = 90;
     if (Motor_DutyL & 0x80000000 == 0x80000000) Motor_DutyL = 0;
     PWMPulseWidthSet(PWM0_BASE, PWM_OUT_7, Motor_DutyL*Motor_Val_Load/100);
-
-
 }
 
 void Motor_setspd_R(uint32_t Motor_DutyR){
@@ -104,12 +102,11 @@ void Motor_setspd_R(uint32_t Motor_DutyR){
 }
 
 void MotorSpdUp(UArg arg0, UArg arg1){
-
     if(Motor_Duty < 90){
-            Motor_Duty = Motor_Duty + 10;
-            Motor_setspd_R(Motor_Duty);
-            Motor_setspd_L(Motor_Duty);
-        }
+        Motor_Duty = Motor_Duty + 10;
+        Motor_setspd_R(Motor_Duty);
+        Motor_setspd_L(Motor_Duty);
+    }
 
 }
 

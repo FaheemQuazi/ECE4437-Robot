@@ -48,18 +48,12 @@ void clkDistTrigger() {
     ADCSequenceDataGet(ADC1_BASE, 3, &DistR);
 }
 
-float Dist_GetRCM() {
-    float DR = 4544.5 * pow((float)DistR,-0.834);
-    if (DR < 4.1) DR = 4.1;
-    if (DR > 15) DR = 15;
-    return DR;
+uint16_t Dist_GetR() {
+    return DistR;
 }
 
-float Dist_GetFCM() {
-    float DR = 10754 * pow((float)DistF,-0.953);
-    if (DR < 4.1) DR = 4.1;
-    if (DR > 15) DR = 15;
-    return DR;
+uint16_t Dist_GetF() {
+    return DistF;
 }
 
 

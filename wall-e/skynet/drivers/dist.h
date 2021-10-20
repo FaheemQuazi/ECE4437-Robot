@@ -37,8 +37,8 @@ void Dist_Init();
 void clkDistTrigger();
 void hwiDistF();
 
-float Dist_GetRCM();
-float Dist_GetFCM();
+uint16_t Dist_GetR();
+uint16_t Dist_GetF();
 
 void Dist_Print(UArg, UArg);
 

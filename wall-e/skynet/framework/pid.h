@@ -35,10 +35,11 @@
 #include "skynet/drivers/dist.h"
 #include "skynet/drivers/motor.h"
 
-#define SETPOINT 6
-#define P_MULT 10
-#define I_MULT 5
-#define D_MULT 5
+#define PID_FWD_SPEED 50
+#define PID_SETPOINT 2250
+#define PID_P_MULT 0.025
+#define PID_I_MULT 0
+#define PID_D_MULT 0.02
 
 void PID_Init();
 void RunPIDController();

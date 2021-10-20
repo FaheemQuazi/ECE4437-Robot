@@ -1,9 +1,6 @@
 #include "pid.h"
 
 //****************Globals**************************
-uint16_t PID_pulseWidth = 0;
-uint16_t PID_convertedADCVal;
-float PID_errorCurr = 0;
 float PID_errorPrev = 0;
 int16_t PID_totalSummation = 0;
 int16_t PID_diff;
@@ -11,29 +8,29 @@ int16_t PID_diff;
 
 void PID_Init() {
     Motor_Forward(NULL, NULL);
-    Motor_setspd_L(50);
+    Motor_setspd_L(PID_FWD_SPEED);
 }
 
 void RunPIDController(){
-
     float P, I, D;
 
-    PID_errorCurr = SETPOINT - Dist_GetRCM() + 4;
+    int16_t PID_errorCurr = PID_SETPOINT - Dist_GetR();
 
+    P = PID_P_MULT * PID_errorCurr;
 
-//    P = P_MULT * PID_errorCurr;
-//
-//    PID_totalSummation += PID_errorCurr;
-//    I = I_MULT * PID_totalSummation; // Note, not using time as a simplification since it should be consistent
-//
-//    PID_diff = PID_errorCurr - PID_errorPrev;
-//    PID_errorPrev = PID_errorCurr;
-//    D = D_MULT * PID_diff;  // Note, not using time as a simplification since it should be consistent
+    PID_totalSummation += PID_errorCurr;
+    I = PID_I_MULT * PID_totalSummation; // Note, not using time as a simplification since it should be consistent
 
-//    PID_pulseWidth = (uint16_t)(P + I + D);
+    PID_diff = PID_errorCurr - PID_errorPrev;
+    PID_errorPrev = PID_errorCurr;
+    D = PID_D_MULT * PID_diff;  // Note, not using time as a simplification since it should be consistent
 
-    Motor_setspd_R((uint16_t)PID_errorCurr * 10);
+    int16_t v = PID_FWD_SPEED - (P + I + D);
 
+    uint16_t speed = (uint16_t)v;
+    if (v < 0) speed = 0;
+    if (v > 100) speed = 100;
+    Motor_setspd_R(speed);
 
-
+    return;
 }
