@@ -27,28 +27,35 @@ void Dist_Init() {
     ADCSequenceConfigure(ADC0_BASE, 3, ADC_TRIGGER_PROCESSOR, 0);
     ADCSequenceStepConfigure(ADC0_BASE, 3, 0, ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH6);
     ADCSequenceEnable(ADC0_BASE, 3);
+    ADCIntEnable(ADC0_BASE, 3);
 
     // Right sensor
     ADCSequenceConfigure(ADC1_BASE, 3, ADC_TRIGGER_PROCESSOR, 0);
     ADCSequenceStepConfigure(ADC1_BASE, 3, 0, ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH7);
     ADCSequenceEnable(ADC1_BASE, 3);
+    ADCIntEnable(ADC1_BASE, 3);
 
 }
 
 void swiDistTrigger() {
-    // Front Sensor
-    ADCProcessorTrigger(ADC0_BASE, 3);
-    ADCIntClear(ADC0_BASE, 3);
     ADCSequenceDataGet(ADC0_BASE, 3, &DistF);
-
-    // Right Sensor
-    ADCProcessorTrigger(ADC1_BASE, 3);
-    ADCIntClear(ADC1_BASE, 3);
     ADCSequenceDataGet(ADC1_BASE, 3, &DistR);
 }
 
-void clkDistTrigger() {
+
+void hwiDistF() {
+    ADCIntClear(ADC0_BASE, 3);
     Swi_post(swiDist);
+}
+
+void hwiDistR() {
+    ADCIntClear(ADC1_BASE, 3);
+    Swi_post(swiDist);
+}
+
+void clkDistTrigger() {
+    ADCProcessorTrigger(ADC0_BASE, 3);
+    ADCProcessorTrigger(ADC1_BASE, 3);
 }
 
 uint16_t Dist_GetR() {
