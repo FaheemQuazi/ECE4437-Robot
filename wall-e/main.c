@@ -31,6 +31,7 @@
 #include "skynet/drivers/motor.h"
 #include "skynet/drivers/lightsensor.h"
 #include "skynet/framework/cmd.h"
+#include "skynet/framework/pid.h"
 
 
 // *** Board Initialization Function ***
@@ -39,6 +40,7 @@ void Board_Init() {
     BT_Init();
     Motor_Init();
     Dist_Init();
+    PID_Init();
 }
 
 // *** Main ***

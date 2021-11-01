@@ -35,7 +35,10 @@ uint32_t DistR;
 
 void Dist_Init();
 void clkDistTrigger();
-void hwiDistF();
+void swiDistTrigger();
+
+uint16_t Dist_GetR();
+uint16_t Dist_GetF();
 
 void Dist_Print(UArg, UArg);
 
