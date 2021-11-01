@@ -26,5 +26,7 @@
 #include <driverlib/pin_map.h>
 
 void LightSensor_Init();
+void GetLight();
+void delay();
 
 #endif /* SKYNET_DRIVERS_LIGHTSENSOR_H_ */
