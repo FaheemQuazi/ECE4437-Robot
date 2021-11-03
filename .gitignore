@@ -51,3 +51,4 @@ src/
 # System Files
 .DS_Store
 
+wall-e/skynet/drivers/.project

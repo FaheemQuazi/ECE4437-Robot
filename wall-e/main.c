@@ -40,6 +40,7 @@ void Board_Init() {
     BT_Init();
     Motor_Init();
     Dist_Init();
+    LightSensor_Init();
     PID_Init();
 }
 

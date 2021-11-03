@@ -20,13 +20,13 @@ void swiLeftCheck() {
     // Turn left until distance sensor sees opening
     Motor_setdir_L(false);
     Motor_setdir_R(true);
-    while (d > 500) {
-        Motor_setspd_L(PID_FWD_SPEED / 2);
-        Motor_setspd_R(PID_FWD_SPEED / 2);
+    while (d > 600) {
+        Motor_setspd_L(PID_FWD_SPEED);
+        Motor_setspd_R(PID_FWD_SPEED);
         d = Dist_GetF();
     }
 
-    SysCtlDelay(700000);
+//    SysCtlDelay(500000);
 
     // Move straight until right sensor is far enough away
     Motor_setdir_L(true);
@@ -38,22 +38,28 @@ void swiLeftCheck() {
 //        Motor_setspd_R(PID_FWD_SPEED);
 //        d = Dist_GetR();
 //    }
-
+    Motor_setspd_L(PID_FWD_SPEED);
     PID_Left = false;
 }
 
 void FrontSensorAdjust() {
     int16_t f = Dist_GetF();
 
-    PID_Fwd = PID_FWD_SPEED - (PID_FWD_SPEED * f / 3500);
-    if (PID_Fwd < 15) {
-        f = 1;
+//    PID_Fwd = PID_FWD_SPEED - (PID_FWD_SPEED * f / 3500);
+//    if (PID_Fwd < 15) {
+//        f = 1;
+//        PID_Left = true;
+//        Swi_post(swiLC);
+//    }
+//    Motor_setspd_L(PID_Fwd);
+
+    if (f > 2900) {
         PID_Left = true;
         Swi_post(swiLC);
     }
-    Motor_setspd_L(PID_Fwd);
 }
 
+uint16_t speed;
 void RunPIDController(){
     if (!PID_Left) {
         FrontSensorAdjust();
@@ -92,11 +98,8 @@ void RunPIDController(){
             speedl = 100;
         }
 
-
         Motor_setspd_R(speedr);
         Motor_setspd_L(speedl);
-
-
 
     }
 }
