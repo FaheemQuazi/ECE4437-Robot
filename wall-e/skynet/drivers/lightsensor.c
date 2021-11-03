@@ -21,6 +21,8 @@
 #include "driverlib/interrupt.h"
 #include "driverlib/timer.h"
 #include <time.h>
+#include "skynet/drivers/bt.h"
+#include "skynet/drivers/motor.h"
 
 #include "inc/hw_timer.h"
 #include "lightsensor.h"
@@ -37,6 +39,8 @@ void LightSensor_Init(void) {
 uint32_t startTime, endTime, pinValue;
 int count = 0;
 int state = 0;
+bool isBlack;
+
 void GetLight() {
     switch (state) {
     case 0:
@@ -61,9 +65,10 @@ void GetLight() {
         break;
     case 2:
         if (count > 2) {
-            GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, 2);
+            isBlack = true;
+
         } else {
-            GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, 0);
+            isBlack = false;
         }
         count = 0;
         state = 3;
@@ -77,15 +82,32 @@ void GetLight() {
         }
         break;
     }
-
+    detectLine();
 }
 
-// delay()
-// Creates a delay of i milliseconds via TivaWare fxn
-//---------------------------------------------------------------------------
-void delay(uint32_t i)
-{
-     SysCtlDelay(26800 * i);        // creates ~1ms delay - TivaWare fxn
+int lineCount = 0;
+bool onBlack = false;
+void detectLine() {
+    if (onBlack == false && isBlack == true){          //are we over black or white?
+        onBlack = true;                               //set onBlack = true
+        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2, 0);
+        lineCount = 1;                                //start counting
+    }
 
+    if (onBlack == true && isBlack == true) {
+        lineCount++;                               //keep counting
+        if (lineCount > 20000) {
+            lineCount = 20000;
+        }
+    }
+
+    if (onBlack == true && isBlack == false) {
+        onBlack = false;
+        if (lineCount > 290) {
+            GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, 2);
+        } else if (lineCount > 140) {
+            GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 4);
+        }
+    }
 }
 

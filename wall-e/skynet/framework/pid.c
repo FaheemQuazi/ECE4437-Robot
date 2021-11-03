@@ -20,7 +20,7 @@ void swiLeftCheck() {
     // Turn left until distance sensor sees opening
     Motor_setdir_L(false);
     Motor_setdir_R(true);
-    while (d > 500) {
+    while (d > 600) {
         Motor_setspd_L(PID_FWD_SPEED);
         Motor_setspd_R(PID_FWD_SPEED);
         d = Dist_GetF();
