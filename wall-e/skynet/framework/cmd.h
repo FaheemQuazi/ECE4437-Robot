@@ -22,6 +22,7 @@
 #include "skynet/drivers/motor.h"
 #include "skynet/drivers/lightsensor.h"
 #include "skynet/drivers/dist.h"
+#include "skynet/framework/control.h"
 
 typedef struct {
     char name[8];
