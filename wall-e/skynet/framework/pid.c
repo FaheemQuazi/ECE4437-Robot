@@ -77,14 +77,29 @@ void RunPIDController(){
         PID_errorPrev = PID_errorCurr;
         D = PID_D_MULT * PID_diff;  // Note, not using time as a simplification since it should be consistent
 
-        int16_t v = PID_Fwd - (P + I + D);
 
-        speed = (uint16_t)v;
-        if (v < 30) speed = speed / 2;
-        if (v > 100) speed = 100;
-        if (speed < 5) speed = 1;
-        Motor_setspd_R(speed);
+        int16_t vr = PID_Fwd - (P + I + D);
+        int16_t vl = PID_Fwd - (vr - PID_Fwd);
 
+        uint16_t speedr = (uint16_t)vr;
+        uint16_t speedl = (uint16_t)vl;
+
+        if (vr < 0){
+            speedr = 1;
+        }
+        else if(vr > 100){
+            speedr = 100;
+        }
+
+        if(vl < 0){
+            speedl = 1;
+        }
+        else if(vl > 100){
+            speedl = 100;
+        }
+
+        Motor_setspd_R(speedr);
+        Motor_setspd_L(speedl);
 
     }
 }
