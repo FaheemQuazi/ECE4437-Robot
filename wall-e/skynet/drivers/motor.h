@@ -35,6 +35,7 @@ uint16_t Motor_Duty;
 uint32_t Motor_Val_Load, Motor_pwm_clk;
 
 void Motor_Init();
+void Motor_Start(UArg, UArg);
 void Motor_Stop(UArg, UArg);
 void Motor_Forward(UArg, UArg);
 void Motor_TurnR(UArg, UArg);

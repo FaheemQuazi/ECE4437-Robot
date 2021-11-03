@@ -14,6 +14,7 @@
 
 #include "skynet/drivers/dist.h"
 #include "skynet/drivers/motor.h"
+#include "skynet/framework/control.h"
 
 #define PID_FWD_SPEED 90
 #define PID_SETPOINT 2600

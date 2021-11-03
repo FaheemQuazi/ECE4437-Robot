@@ -55,6 +55,12 @@ void FrontSensorAdjust() {
 }
 
 void RunPIDController(){
+    if (ESTOP()) {
+        Motor_Stop(NULL, NULL);
+        return;
+    } else {
+        Motor_Start(NULL, NULL);
+    }
     if (!PID_Left) {
         FrontSensorAdjust();
 

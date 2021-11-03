@@ -14,13 +14,10 @@ COMMAND CMD_defs[] = {
     { "ledb", &LED_ToggleB },
     { "dist", &Dist_Print },
     { "test", &CMD_DoNothing},
-    { "mtm", &Motor_Forward },
-    { "mts", &Motor_Stop },
-    { "tr", &Motor_TurnR },
-    { "tl", &Motor_TurnL },
-    { "rev", &Motor_Reverse },
-    { "fast", &MotorSpdUp },
-    { "slow", &MotorSpdDown }
+    { "mtrg", &Motor_Stop },
+    { "mtrs", &Motor_Start },
+    { "ES", &setESTOP },
+    { "EC", &clrESTOP }
 };
 
 

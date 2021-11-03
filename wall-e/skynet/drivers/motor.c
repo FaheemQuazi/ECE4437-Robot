@@ -51,6 +51,12 @@ void Motor_Forward(UArg arg0, UArg arg1){
 
 }
 
+void Motor_Start(UArg arg0, UArg arg1) {
+
+    PWMOutputState(PWM0_BASE, PWM_OUT_6_BIT, true);
+    PWMOutputState(PWM0_BASE, PWM_OUT_7_BIT, true);
+}
+
 void Motor_Stop(UArg arg0, UArg arg1){
 
     PWMOutputState(PWM0_BASE, PWM_OUT_6_BIT, false);
