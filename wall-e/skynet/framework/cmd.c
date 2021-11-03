@@ -17,7 +17,8 @@ COMMAND CMD_defs[] = {
     { "mtrg", &Motor_Stop },
     { "mtrs", &Motor_Start },
     { "ES", &setESTOP },
-    { "EC", &clrESTOP }
+    { "EC", &clrESTOP },
+    { "LC", &getLineCount }
 };
 
 

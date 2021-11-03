@@ -29,5 +29,7 @@ void LightSensor_Init();
 void GetLight();
 void delay();
 void detectLine();
+void getLineCount(UArg, UArg);
+void tskLSDataSender(UArg, UArg);
 
 #endif /* SKYNET_DRIVERS_LIGHTSENSOR_H_ */

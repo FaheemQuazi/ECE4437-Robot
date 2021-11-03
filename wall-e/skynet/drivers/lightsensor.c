@@ -23,6 +23,8 @@
 #include <time.h>
 #include "skynet/drivers/bt.h"
 #include "skynet/drivers/motor.h"
+#include "skynet/framework/control.h"
+#include "skynet/drivers/dist.h"
 
 #include "inc/hw_timer.h"
 #include "lightsensor.h"
@@ -87,6 +89,7 @@ void GetLight() {
 
 int lineCount = 0;
 bool onBlack = false;
+bool sendData = false;
 void detectLine() {
     if (onBlack == false && isBlack == true){          //are we over black or white?
         onBlack = true;                               //set onBlack = true
@@ -103,11 +106,38 @@ void detectLine() {
 
     if (onBlack == true && isBlack == false) {
         onBlack = false;
-        if (lineCount > 290) {
+        if (lineCount > 240) {
+            setESTOP();
             GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, 2);
-        } else if (lineCount > 140) {
+        } else if (lineCount > 90) {
+            sendData = !sendData;
             GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 4);
         }
     }
+}
+
+void clkDataSender() {
+    if (sendData & !ESTOP()) {
+        Semaphore_post(semPrintDist);
+    }
+
+    if (ESTOP()) {
+        sendData = false;
+    }
+}
+
+void tskLSDataSender(UArg arg0, UArg arg1) {
+    while (true) {
+        Semaphore_pend(semPrintDist, BIOS_WAIT_FOREVER);
+        Dist_Print(arg0, arg1);
+    }
+}
+
+void getLineCount(UArg a0, UArg a1) {
+    char *out = (char *)malloc(16*sizeof(char));
+
+    sprintf(out, "%d\r\n", lineCount);
+    BT_PrintString(out);
+    free(out);
 }
 
