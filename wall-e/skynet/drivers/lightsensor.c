@@ -25,12 +25,35 @@
 #include "skynet/drivers/motor.h"
 #include "skynet/framework/control.h"
 #include "skynet/drivers/dist.h"
+#include "skynet/framework/pid.h"
 
 #include "inc/hw_timer.h"
 #include "lightsensor.h"
 
+typedef struct {
+    char colon;
+    char addr;
+    char func;
+    char data[20];
+    char chk;
+    char cr;
+    char lf;
+} MODBUS_DATA;
+
+union {
+    char raw[26];
+    MODBUS_DATA mb;
+} d;
+
 
 void LightSensor_Init(void) {
+        d.mb.colon = ':';
+        d.mb.addr = 1;
+        d.mb.func = 'L';
+
+        d.mb.chk = 'Z';
+        d.mb.cr = '\r';
+        d.mb.lf = '\n';
 
        SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD); // Enable PortD Peripheral
        SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF); // Enable PortF Peripheral
@@ -91,8 +114,8 @@ int lineCount = 0;
 bool onBlack = false;
 bool sendData = false;
 void detectLine() {
-    if (onBlack == false && isBlack == true){          //are we over black or white?
-        onBlack = true;                               //set onBlack = true
+    if (onBlack == false && isBlack == true) {          //are we over black or white?
+        onBlack = true;                                 //set onBlack = true
         GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2, 0);
         lineCount = 1;                                //start counting
     }
@@ -108,10 +131,13 @@ void detectLine() {
         onBlack = false;
         if (lineCount > 240) {
             setESTOP();
-            GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, 2);
         } else if (lineCount > 90) {
             sendData = !sendData;
-            GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 4);
+            if (sendData) {
+                GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 4);
+            } else {
+                GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 0);
+            }
         }
     }
 }
@@ -126,10 +152,29 @@ void clkDataSender() {
     }
 }
 
+
 void tskLSDataSender(UArg arg0, UArg arg1) {
+    int i = 0;
     while (true) {
         Semaphore_pend(semPrintDist, BIOS_WAIT_FOREVER);
-        Dist_Print(arg0, arg1);
+        if (i < 20) {
+            if (pidval > 127) {
+                d.mb.data[i] = 255;
+            } else if (pidval < -127) {
+                d.mb.data[i] = 0;
+            } else {
+                d.mb.data[i] = (char) pidval;
+            }
+            i++;
+
+            GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0);
+        } else {
+            if (!PID_Left) {
+                BT_PrintString("2S\r\n");
+                GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 8);
+                i = 0;
+            }
+        }
     }
 }
 
@@ -139,5 +184,9 @@ void getLineCount(UArg a0, UArg a1) {
     sprintf(out, "%d\r\n", lineCount);
     BT_PrintString(out);
     free(out);
+}
+
+void testStruct(UArg a0, UArg a1) {
+    BT_PrintString(d.raw);
 }
 

@@ -23,6 +23,9 @@
 #define PID_I_MULT 0
 #define PID_D_MULT 0.015
 
+int16_t pidval;
+bool PID_Left;
+
 void PID_Init();
 void RunPIDController();
 void swiLeftCheck();

@@ -5,7 +5,6 @@ float PID_errorPrev = 0;
 int16_t PID_totalSummation = 0;
 int16_t PID_diff;
 uint16_t PID_Fwd = PID_FWD_SPEED;
-Bool PID_Left = false;
 
 
 void PID_Init() {
@@ -23,11 +22,14 @@ void swiLeftCheck() {
     if (d > 600) {
         Motor_setspd_L(PID_FWD_SPEED);
         Motor_setspd_R(PID_FWD_SPEED);
+//        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, 2);
     } else {
         Motor_setdir_L(true);
         Motor_setdir_R(true);
         Motor_setspd_L(PID_FWD_SPEED);
+        Motor_setspd_R(PID_FWD_SPEED);
         PID_Left = false;
+//        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, 0);
     }
 
 }
@@ -68,7 +70,8 @@ void RunPIDController(){
         D = PID_D_MULT * PID_diff;  // Note, not using time as a simplification since it should be consistent
 
 
-        int16_t vr = PID_Fwd - (P + I + D);
+        pidval = P + I + D;
+        int16_t vr = PID_Fwd - pidval;
         int16_t vl = PID_Fwd - (vr - PID_Fwd);
 
         uint16_t speedr = (uint16_t)vr;

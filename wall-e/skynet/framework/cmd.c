@@ -7,7 +7,6 @@
 
 #include "cmd.h"
 
-
 COMMAND CMD_defs[] = {
     { "ledr", &LED_ToggleR },
     { "ledg", &LED_ToggleG },
@@ -18,7 +17,8 @@ COMMAND CMD_defs[] = {
     { "mtrs", &Motor_Start },
     { "ES", &setESTOP },
     { "EC", &clrESTOP },
-    { "LC", &getLineCount }
+    { "LC", &getLineCount },
+    { "DD", &testStruct }
 };
 
 

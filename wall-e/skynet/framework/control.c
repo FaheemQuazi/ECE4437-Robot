@@ -8,7 +8,7 @@
 
 #include "control.h"
 
-bool estop;
+bool estop = true;
 
 bool ESTOP() {
     return estop;
