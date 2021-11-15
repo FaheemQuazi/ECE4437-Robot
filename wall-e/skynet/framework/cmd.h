@@ -29,6 +29,20 @@ typedef struct {
     void (*fun_ptr)(UArg, UArg);
 } COMMAND;
 
+typedef struct {
+    char colon;
+    char addr;
+    char data[20];
+    char chk;
+    char cr;
+    char lf;
+} MODBUS_DATA;
+
+typedef union {
+    char raw[26];
+    MODBUS_DATA mb;
+} MODBUS_PACKET;
+
 void CMD_DoNothing(UArg, UArg);
 void tskCMDDispatcher(UArg, UArg);
 

@@ -26,38 +26,36 @@
 #include "skynet/framework/control.h"
 #include "skynet/drivers/dist.h"
 #include "skynet/framework/pid.h"
+#include "skynet/framework/cmd.h"
 
 #include "inc/hw_timer.h"
 #include "lightsensor.h"
 
-typedef struct {
-    char colon;
-    char addr;
-    char func;
-    char data[20];
-    char chk;
-    char cr;
-    char lf;
-} MODBUS_DATA;
-
-union {
-    char raw[26];
-    MODBUS_DATA mb;
-} d;
-
+MODBUS_PACKET dataPing;
+MODBUS_PACKET dataPong;
+MODBUS_PACKET* dataCurr;
+int dataCount = 0;
 
 void LightSensor_Init(void) {
-        d.mb.colon = ':';
-        d.mb.addr = 1;
-        d.mb.func = 'L';
+    dataPing.mb.colon = ':';
+    dataPing.mb.addr = 1;
+    dataPing.mb.chk = 1;
+    dataPing.mb.cr = '\r';
+    dataPing.mb.lf = '\n';
+    dataPing.raw[25] = '\0';
 
-        d.mb.chk = 'Z';
-        d.mb.cr = '\r';
-        d.mb.lf = '\n';
+    dataPong.mb.colon = ':';
+    dataPong.mb.addr = 1;
+    dataPong.mb.chk = 1;
+    dataPong.mb.cr = '\r';
+    dataPong.mb.lf = '\n';
+    dataPong.raw[25] = '\0';
 
-       SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD); // Enable PortD Peripheral
-       SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF); // Enable PortF Peripheral
-       GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1); // Make PortF Pin1 Output
+    dataCurr = &dataPing;
+
+   SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD); // Enable PortD Peripheral
+   SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF); // Enable PortF Peripheral
+   GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1); // Make PortF Pin1 Output
 }
 
 
@@ -142,39 +140,33 @@ void detectLine() {
     }
 }
 
-void clkDataSender() {
-    if (sendData & !ESTOP()) {
-        Semaphore_post(semPrintDist);
+void tmrLSDataSender() {
+    TimerIntClear(TIMER1_BASE, TimerIntStatus(TIMER1_BASE, false));
+
+    int x = abs(pidval);
+
+    if (!sendData || ESTOP()) {
+        return;
     }
 
-    if (ESTOP()) {
-        sendData = false;
-    }
-}
+    if (dataCount < 20) {
+        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0);
+        if (x > 255) x = 255;
+        dataCurr->mb.data[dataCount] = (char) x;
+        dataCount++;
 
+    } else {
+        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 8);
 
-void tskLSDataSender(UArg arg0, UArg arg1) {
-    int i = 0;
-    while (true) {
-        Semaphore_pend(semPrintDist, BIOS_WAIT_FOREVER);
-        if (i < 20) {
-            if (pidval > 127) {
-                d.mb.data[i] = 255;
-            } else if (pidval < -127) {
-                d.mb.data[i] = 0;
-            } else {
-                d.mb.data[i] = (char) pidval;
-            }
-            i++;
+        BT_PrintString(dataCurr->raw);
 
-            GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0);
+        if (dataCurr == &dataPong) {
+            dataCurr = &dataPing;
         } else {
-            if (!PID_Left) {
-                BT_PrintString("2S\r\n");
-                GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 8);
-                i = 0;
-            }
+            dataCurr = &dataPong;
         }
+
+        dataCount = 0;
     }
 }
 
@@ -187,6 +179,6 @@ void getLineCount(UArg a0, UArg a1) {
 }
 
 void testStruct(UArg a0, UArg a1) {
-    BT_PrintString(d.raw);
+    BT_PrintString(dataPing.raw);
 }
 

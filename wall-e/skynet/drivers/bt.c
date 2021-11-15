@@ -28,45 +28,31 @@ void BT_PrintString(char str[]) {
 
 // ======== task: UART Read ========
 void tskBTRead(UArg arg0, UArg arg1) {
-    char rc[8];
+    MODBUS_PACKET rc;
     uint8_t p = 0;
     char r;
 
-    rc[0] = '\0';
-    UARTCharPut(UART5_BASE, '>');
+    rc.raw[0] = '\0';
 
+    BT_PrintString("OK");
     while(1) {
 
         // This line will wait until a character is received on the UART
         r = UARTCharGet(UART5_BASE);
 
-        if (r == '\r') {
-            if (strlen(rc) > 0) {
-                BT_PrintString("\r\n");
-                Mailbox_post(mbxCmd, &rc, BIOS_NO_WAIT);
-                p = 0;
-                rc[0] = '\0';
-            }
-            BT_PrintString("\r\n>");
-        } else {
-            switch (r) {
-            case '\b':
-                if (p > 0) {
-                    p--;
-                    rc[p] = '\0';
-                    BT_PrintString("\b\e[0K"); // \b = backspace ; \e[0K clears the characters to the right of the cursor
-                }
-                break;
-            default:
-                if (p <= 6) {
-                    // we have room for a char
-                    rc[p] = r;
-                    rc[++p] = '\0';
-                    UARTCharPut(UART5_BASE, r);
-                }
-                break;
-            }
+        if (r == 'e') {
+           setESTOP();
+        } else if (r == 'c') {
+            clrESTOP();
         }
+//        if (r == '\r') {
+//            if (strlen(rc.raw) > 0) {
+//                Mailbox_post(mbxCmd, &rc, BIOS_NO_WAIT);
+//                p = 0;
+//            }
+//        } else {
+//            rc.raw[p++] = r;
+//        }
 
     }
 }

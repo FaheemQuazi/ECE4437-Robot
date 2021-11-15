@@ -24,6 +24,7 @@
 #include <driverlib/uart.h>
 
 #include "skynet/framework/cmd.h"
+#include "skynet/framework/control.h"
 
 
 void BT_Init();
