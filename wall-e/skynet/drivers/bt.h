@@ -25,6 +25,7 @@
 
 #include "skynet/framework/cmd.h"
 #include "skynet/framework/control.h"
+#include "skynet/framework/Timer.h"
 
 
 void BT_Init();

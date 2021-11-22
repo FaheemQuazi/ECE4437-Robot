@@ -2,7 +2,7 @@
  * lightsensor.h
  *
  *  Created on: Sep 29, 2021
- *      Author: faheem
+ *      Author:
  */
 
 #ifndef SKYNET_DRIVERS_LIGHTSENSOR_H_

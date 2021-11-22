@@ -2,6 +2,7 @@
 #include "bt.h"
 
 
+
 void BT_Init() {
     // ****** UART GPIO Pin Configuration ******
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);
@@ -44,7 +45,14 @@ void tskBTRead(UArg arg0, UArg arg1) {
            setESTOP();
         } else if (r == 'c') {
             clrESTOP();
+            timestarted = true;
         }
+
+        else if (r == 'y') {
+            resetTimer();
+        }
+
+
 //        if (r == '\r') {
 //            if (strlen(rc.raw) > 0) {
 //                Mailbox_post(mbxCmd, &rc, BIOS_NO_WAIT);

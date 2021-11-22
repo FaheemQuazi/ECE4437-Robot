@@ -2,7 +2,7 @@
  * lightsensor.c
  *
  *  Created on: Sep 29, 2021
- *      Author: faheem
+ *      Author:
  */
 
 ///------------------------------------------
@@ -27,6 +27,7 @@
 #include "skynet/drivers/dist.h"
 #include "skynet/framework/pid.h"
 #include "skynet/framework/cmd.h"
+#include "skynet/framework/Timer.h"
 
 #include "inc/hw_timer.h"
 #include "lightsensor.h"
@@ -35,6 +36,8 @@ MODBUS_PACKET dataPing;
 MODBUS_PACKET dataPong;
 MODBUS_PACKET* dataCurr;
 int dataCount = 0;
+
+char *x;
 
 void LightSensor_Init(void) {
     dataPing.mb.colon = ':';
@@ -52,6 +55,8 @@ void LightSensor_Init(void) {
     dataPong.raw[25] = '\0';
 
     dataCurr = &dataPing;
+
+    x = (char*)malloc(sizeof(char) * 16);
 
    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD); // Enable PortD Peripheral
    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF); // Enable PortF Peripheral
@@ -129,6 +134,10 @@ void detectLine() {
         onBlack = false;
         if (lineCount > 240) {
             setESTOP();
+            timestarted = false;
+            float timeinseconds = (float)timesincestart / 4;
+            sprintf(x, "\r\n%0.2fs", timeinseconds);
+            BT_PrintString(x);
         } else if (lineCount > 90) {
             sendData = !sendData;
             if (sendData) {
