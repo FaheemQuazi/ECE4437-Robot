@@ -14,12 +14,13 @@ void RaceTimer_Init() {
 }
 
 void GetTimer() {
-    //start timer
+    //Start timer if time has started
     if (timestarted) {
        timesincestart = timesincestart + 1;
     }
 }
 
+    //Reset the timer
 void resetTimer()
 {
         timesincestart = 0;
