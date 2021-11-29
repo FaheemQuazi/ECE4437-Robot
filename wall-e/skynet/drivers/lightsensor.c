@@ -117,15 +117,16 @@ void detectLine() {
         if (lineCount > 240) {                                      //if lineCount exceeds threshold for a single black line
             setESTOP();                                             //stop the robot
             timestarted = false;
-            float timeinseconds = (float)timesincestart / 4;        //convert to seconds
-            sprintf(x, "\r\n%0.2fs", timeinseconds);                //print time in seconds from start until the robot stops at thick line
+            float timeinseconds = (float)timesincestart / 200;      //convert to seconds
+            sprintf(x, "T%0.2fs\r\n", timeinseconds);                //print time in seconds from start until the robot stops at thick line
             BT_PrintString(x);
         } else if (lineCount > 90) {                                //if encounter thin black line send data
-            sendData = !sendData;
             if (sendData) {
-                GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 4);
-            } else {
                 GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 0);       //turn off led
+                sendData = false;
+            } else {
+                GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 4);
+                sendData = true;
             }
         }
     }
@@ -134,9 +135,9 @@ void detectLine() {
 void tmrLSDataSender() {
     TimerIntClear(TIMER1_BASE, TimerIntStatus(TIMER1_BASE, false));
 
-    int x = abs(pidval);
+    int x = abs(PID_errorCurr);
 
-    if (!sendData || ESTOP()) {
+    if (ESTOP() || sendData != true) {
         return;
     }
 

@@ -46,9 +46,7 @@ void tskBTRead(UArg arg0, UArg arg1) {
         } else if (r == 'c') {
             clrESTOP();
             timestarted = true;
-        }
-
-        else if (r == 'y') {
+        } else if (r == 'r') {
             resetTimer();
         }
 

@@ -24,6 +24,7 @@ void GetTimer() {
 void resetTimer()
 {
         timesincestart = 0;
+        timestarted = false;
 }
 
 

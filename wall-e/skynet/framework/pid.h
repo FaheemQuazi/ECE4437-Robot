@@ -25,6 +25,7 @@
 #define PID_D_MULT 0.015
 
 int16_t pidval;
+int16_t PID_errorCurr;
 bool PID_Left;
 
 void PID_Init();

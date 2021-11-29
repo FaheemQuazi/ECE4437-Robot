@@ -42,7 +42,7 @@ void swiPidMotor(UArg arg0, UArg arg1) {
 
         float P, I, D;
 
-        int16_t PID_errorCurr = PID_SETPOINT - Dist_GetR();
+        PID_errorCurr = PID_SETPOINT - Dist_GetR();
 
         P = PID_P_MULT * PID_errorCurr;
 
