@@ -14,6 +14,8 @@ void RaceTimer_Init() {
 }
 
 void GetTimer() {
+    TimerIntClear(TIMER2_BASE, TimerIntStatus(TIMER2_BASE, false));
+
     //Start timer if time has started
     if (timestarted) {
        timesincestart = timesincestart + 1;
