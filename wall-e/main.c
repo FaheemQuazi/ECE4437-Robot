@@ -32,6 +32,7 @@
 #include "skynet/drivers/lightsensor.h"
 #include "skynet/framework/cmd.h"
 #include "skynet/framework/pid.h"
+#include "skynet/framework/Timer.h"
 
 
 // *** Board Initialization Function ***
@@ -42,6 +43,7 @@ void Board_Init() {
     Dist_Init();
     LightSensor_Init();
     PID_Init();
+    RaceTimer_Init();
 }
 
 // *** Main ***

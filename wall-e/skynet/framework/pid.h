@@ -12,6 +12,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+#include <driverlib/timer.h>
 #include "skynet/drivers/dist.h"
 #include "skynet/drivers/motor.h"
 #include "skynet/framework/control.h"
@@ -23,8 +24,11 @@
 #define PID_I_MULT 0
 #define PID_D_MULT 0.015
 
+int16_t pidval;
+bool PID_Left;
+
 void PID_Init();
 void RunPIDController();
-void swiLeftCheck();
+void swiPidMotor(UArg arg0, UArg arg1);
 
 #endif /* SKYNET_FRAMEWORK_PID_H_ */

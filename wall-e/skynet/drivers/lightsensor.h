@@ -2,7 +2,7 @@
  * lightsensor.h
  *
  *  Created on: Sep 29, 2021
- *      Author: faheem
+ *      Author:
  */
 
 #ifndef SKYNET_DRIVERS_LIGHTSENSOR_H_
@@ -12,6 +12,21 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
+
+#include "inc/hw_types.h"
+#include "inc/hw_ints.h"
+#include "driverlib/interrupt.h"
+#include "driverlib/timer.h"
+#include <time.h>
+#include "skynet/drivers/bt.h"
+#include "skynet/drivers/motor.h"
+#include "skynet/framework/control.h"
+#include "skynet/drivers/dist.h"
+#include "skynet/framework/pid.h"
+#include "skynet/framework/cmd.h"
+#include "skynet/framework/Timer.h"
+
+#include "inc/hw_timer.h"
 
 /* Constants */
 #include <inc/hw_memmap.h>
@@ -29,5 +44,8 @@ void LightSensor_Init();
 void GetLight();
 void delay();
 void detectLine();
+void getLineCount(UArg, UArg);
+void tskLSDataSender(UArg, UArg);
+void testStruct(UArg, UArg);
 
 #endif /* SKYNET_DRIVERS_LIGHTSENSOR_H_ */
