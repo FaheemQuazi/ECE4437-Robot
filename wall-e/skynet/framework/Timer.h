@@ -9,6 +9,8 @@
 #define SKYNET_FRAMEWORK_TIMER_H_
 
 #include <stdbool.h>
+#include <xdc/runtime/System.h>
+#include <inc/hw_memmap.h>
 
 void GetTimer();
 void RaceTimer_Init();

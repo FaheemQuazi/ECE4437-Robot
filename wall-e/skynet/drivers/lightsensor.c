@@ -134,12 +134,11 @@ void detectLine() {
 
 void tmrLSDataSender() {
     TimerIntClear(TIMER1_BASE, TimerIntStatus(TIMER1_BASE, false));
-
-    int x = abs(PID_errorCurr);
-
     if (ESTOP() || sendData != true) {
         return;
     }
+
+    int x = abs(PID_errorCurr);
 
     if (dataCount < 20) {
         GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0);
