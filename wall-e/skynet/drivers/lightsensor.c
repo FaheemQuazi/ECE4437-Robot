@@ -16,9 +16,10 @@
 MODBUS_PACKET dataPing;
 MODBUS_PACKET dataPong;
 MODBUS_PACKET* dataCurr;
+MODBUS_PACKET* dataPrev;
 int dataCount = 0;
 
-char *x;
+char *LSRaceTime;
 
 void LightSensor_Init(void) {
     dataPing.mb.colon = ':';
@@ -37,7 +38,7 @@ void LightSensor_Init(void) {
 
     dataCurr = &dataPing;
 
-    x = (char*)malloc(sizeof(char) * 16);
+    LSRaceTime = (char*)malloc(sizeof(char) * 16);
 
    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);                     // Enable PortD Peripheral
    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);                     // Enable PortF Peripheral
@@ -118,8 +119,8 @@ void detectLine() {
             setESTOP();                                             //stop the robot
             timestarted = false;
             float timeinseconds = (float)timesincestart / 200;      //convert to seconds
-            sprintf(x, "T%0.2fs\r\n", timeinseconds);                //print time in seconds from start until the robot stops at thick line
-            BT_PrintString(x);
+            sprintf(LSRaceTime, "T%0.2fs\r\n", timeinseconds);      //print time in seconds from start until the robot stops at thick line
+            BT_PrintString(LSRaceTime);
         } else if (lineCount > 90) {                                //if encounter thin black line send data
             if (sendData) {
                 GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 0);       //turn off led
@@ -132,13 +133,14 @@ void detectLine() {
     }
 }
 
+
 void tmrLSDataSender() {
     TimerIntClear(TIMER1_BASE, TimerIntStatus(TIMER1_BASE, false));
-    if (ESTOP() || sendData != true) {
+    if (ESTOP() || sendData != true) { // Only send data if ESTOP is not set and we want to send data
         return;
     }
 
-    int x = abs(PID_errorCurr);
+    int x = abs(PID_errorCurr); // Current Setpoint-Dist Error
 
     if (dataCount < 20) {
         GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0);
@@ -149,15 +151,25 @@ void tmrLSDataSender() {
     } else {
         GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 8);
 
-        BT_PrintString(dataCurr->raw);
-
+        // Swap buffers
+        dataPrev = dataCurr;
         if (dataCurr == &dataPong) {
             dataCurr = &dataPing;
         } else {
             dataCurr = &dataPong;
         }
-
         dataCount = 0;
+
+        // POST the Print Task
+        Semaphore_post(semPrintDist);
+    }
+}
+
+// Printing the MODBUS Data
+void tskLSPrintData(UArg a0, UArg a1) {
+    while (true) {
+        Semaphore_pend(semPrintDist, BIOS_WAIT_FOREVER);
+        BT_PrintString(dataPrev->raw);
     }
 }
 

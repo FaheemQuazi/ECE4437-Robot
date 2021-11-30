@@ -1,8 +1,5 @@
 /*
- * Timer.c
- *
- *  Created on: Nov 22, 2021
- *      Author: HP
+ * Race Timer Functions
  */
 
 #include "Timer.h"
@@ -16,13 +13,13 @@ void RaceTimer_Init() {
 void GetTimer() {
     TimerIntClear(TIMER2_BASE, TimerIntStatus(TIMER2_BASE, false));
 
-    //Start timer if time has started
+    // Tick timer if we're going now
     if (timestarted) {
        timesincestart = timesincestart + 1;
     }
 }
 
-    //Reset the timer
+//Reset and stop the timer
 void resetTimer()
 {
         timesincestart = 0;
