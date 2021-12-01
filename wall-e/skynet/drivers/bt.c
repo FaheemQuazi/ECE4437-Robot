@@ -51,7 +51,8 @@ void tskBTRead(UArg arg0, UArg arg1) {
             clrESTOP(); // clear ESTOP (or resume/start all functions)
             timestarted = true; // start the race timer
         } else if (r == 'r') {
-            resetTimer(); // reset the race timer
+            resetTimer();
+            LS_sendData = false;
         }
 
 
