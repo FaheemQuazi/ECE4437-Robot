@@ -48,4 +48,7 @@ void getLineCount(UArg, UArg);
 void tskLSDataSender(UArg, UArg);
 void testStruct(UArg, UArg);
 
+
+bool LS_sendData;
+
 #endif /* SKYNET_DRIVERS_LIGHTSENSOR_H_ */

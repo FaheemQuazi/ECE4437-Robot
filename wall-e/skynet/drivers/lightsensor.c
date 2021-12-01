@@ -96,7 +96,6 @@ void GetLight() {
 
 int lineCount = 0;
 bool onBlack = false;
-bool sendData = false;
 //function to determine thickness of the black tape
 void detectLine() {
     if (onBlack == false && isBlack == true) {                      //if previous state was white and current state is black
@@ -121,12 +120,12 @@ void detectLine() {
             sprintf(x, "T%0.2fs\r\n", timeinseconds);                //print time in seconds from start until the robot stops at thick line
             BT_PrintString(x);
         } else if (lineCount > 90) {                                //if encounter thin black line send data
-            if (sendData) {
+            if (LS_sendData) {
                 GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 0);       //turn off led
-                sendData = false;
+                LS_sendData = false;
             } else {
                 GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 4);
-                sendData = true;
+                LS_sendData = true;
             }
         }
     }
@@ -134,11 +133,11 @@ void detectLine() {
 
 void tmrLSDataSender() {
     TimerIntClear(TIMER1_BASE, TimerIntStatus(TIMER1_BASE, false));
-    if (ESTOP() || sendData != true) {
+    if (ESTOP() || LS_sendData != true) {
         return;
     }
 
-    int x = abs(PID_errorCurr);
+    int x = abs((float)PID_errorCurr / 2500 * 255);
 
     if (dataCount < 20) {
         GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0);

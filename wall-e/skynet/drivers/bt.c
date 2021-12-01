@@ -48,6 +48,7 @@ void tskBTRead(UArg arg0, UArg arg1) {
             timestarted = true;
         } else if (r == 'r') {
             resetTimer();
+            LS_sendData = false;
         }
 
 
