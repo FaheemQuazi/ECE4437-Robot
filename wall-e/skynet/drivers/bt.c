@@ -2,7 +2,6 @@
 #include "bt.h"
 
 
-
 void BT_Init() {
     // ****** UART GPIO Pin Configuration ******
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);
@@ -20,6 +19,7 @@ void BT_Init() {
     UARTEnable(UART5_BASE);
 }
 
+// Loop through a string and print the characters to the UART
 void BT_PrintString(char str[]) {
     int i = 0;
     for (i = 0; i < strlen(str); i++) {
@@ -29,11 +29,15 @@ void BT_PrintString(char str[]) {
 
 // ======== task: UART Read ========
 void tskBTRead(UArg arg0, UArg arg1) {
-    MODBUS_PACKET rc;
-    uint8_t p = 0;
-    char r;
+    // Commented out code in this task is for a proper commanding setup
+    // We did not use it for the competition because it was taking up too much resources
+    // which were not necessary for the competition
 
-    rc.raw[0] = '\0';
+
+//    MODBUS_PACKET rc;
+//    uint8_t p = 0;
+//    rc.raw[0] = '\0';
+    char r;
 
     BT_PrintString("OK");
     while(1) {
@@ -42,10 +46,10 @@ void tskBTRead(UArg arg0, UArg arg1) {
         r = UARTCharGet(UART5_BASE);
 
         if (r == 'e') {
-           setESTOP();
+           setESTOP(); // emergency stop (or halt almost all functions)
         } else if (r == 'c') {
-            clrESTOP();
-            timestarted = true;
+            clrESTOP(); // clear ESTOP (or resume/start all functions)
+            timestarted = true; // start the race timer
         } else if (r == 'r') {
             resetTimer();
             LS_sendData = false;

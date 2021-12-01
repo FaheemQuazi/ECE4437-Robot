@@ -37,36 +37,37 @@ void Dist_Init() {
 
 }
 
+// ==== SWI ====
 void swiDistTrigger() {
     ADCSequenceDataGet(ADC0_BASE, 3, &DistF);
     ADCSequenceDataGet(ADC1_BASE, 3, &DistR);
 }
 
-
+// ==== HWI ====
 void hwiDistF() {
     ADCIntClear(ADC0_BASE, 3);
     Swi_post(swiDist);
 }
-
 void hwiDistR() {
     ADCIntClear(ADC1_BASE, 3);
     Swi_post(swiDist);
 }
 
+// ==== Clock ====
 void clkDistTrigger() {
     ADCProcessorTrigger(ADC0_BASE, 3);
     ADCProcessorTrigger(ADC1_BASE, 3);
 }
 
+// ==== Public Functions ====
 uint16_t Dist_GetR() {
     return DistR;
 }
-
 uint16_t Dist_GetF() {
     return DistF;
 }
 
-
+// Helper/Test function used to print converted distance sensor values over BT/UART
 void Dist_Print(UArg arg0, UArg arg1) {
     char *out = (char *)malloc(16*sizeof(char));
 

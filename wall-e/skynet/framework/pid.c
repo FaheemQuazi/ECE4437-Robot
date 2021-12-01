@@ -1,17 +1,17 @@
 #include "pid.h"
 
-//****************Globals**************************
 float PID_errorPrev = 0;
 int16_t PID_totalSummation = 0;
 int16_t PID_diff;
 uint16_t PID_Fwd = PID_FWD_SPEED;
-
+uint16_t speed;
 
 void PID_Init() {
     Motor_Forward(NULL, NULL);
     Motor_setspd_L(PID_Fwd);
 }
 
+// Used to check the front sensor and turn left/u-turn
 void FrontSensorAdjust() {
     uint16_t f = Dist_GetF();
 
@@ -20,9 +20,9 @@ void FrontSensorAdjust() {
     }
 }
 
-uint16_t speed;
+// PID Control Algorithm
 void swiPidMotor(UArg arg0, UArg arg1) {
-    if (PID_Left) {
+    if (PID_Left) { // If we're turning left, don't do the PID algorithm
         uint16_t d = Dist_GetF();
 
         // Turn left until distance sensor sees opening
@@ -37,9 +37,10 @@ void swiPidMotor(UArg arg0, UArg arg1) {
             PID_Left = false;
         }
 
-    } else {
+    } else { // Otherwise do the PID algorithm
         FrontSensorAdjust();
 
+        // PID algorithm
         float P, I, D;
 
         PID_errorCurr = PID_SETPOINT - Dist_GetR();
@@ -53,8 +54,9 @@ void swiPidMotor(UArg arg0, UArg arg1) {
         PID_errorPrev = PID_errorCurr;
         D = PID_D_MULT * PID_diff;  // Note, not using time as a simplification since it should be consistent
 
-
         pidval = P + I + D;
+
+        // Motor speed adjustment based on output of PID algorithm
         int16_t vr = PID_Fwd - pidval;
         int16_t vl = PID_Fwd - (vr - PID_Fwd);
 
@@ -81,6 +83,7 @@ void swiPidMotor(UArg arg0, UArg arg1) {
     }
 }
 
+// Timer ISR to trigger the PID algorithm
 void RunPIDController(){
     TimerIntClear(TIMER0_BASE, TimerIntStatus(TIMER0_BASE, false));
     if (ESTOP()) {
