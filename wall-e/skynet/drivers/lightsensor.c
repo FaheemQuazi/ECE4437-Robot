@@ -132,7 +132,7 @@ void detectLine() {
     }
 }
 
-
+// Collect and handle MODBUS data
 void tmrLSDataSender() {
     TimerIntClear(TIMER1_BASE, TimerIntStatus(TIMER1_BASE, false));
     if (ESTOP() || sendData != true) { // Only send data if ESTOP is not set and we want to send data
@@ -140,6 +140,7 @@ void tmrLSDataSender() {
     }
 
     int x = abs((float)PID_errorCurr / 2500 * 255); // Current Setpoint-Dist Error (Scaled to a 8-bit value)
+
 
     if (dataCount < 20) {
         GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0);

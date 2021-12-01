@@ -14,7 +14,6 @@
 
 #include "led.h"
 
-/*
 void LED_Init()  {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
     GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);

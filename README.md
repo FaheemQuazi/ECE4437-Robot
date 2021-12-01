@@ -12,7 +12,6 @@ The core component of this project was a Texas Instruments Tiva C (EK-TM4C123GXL
 
 ![Wiring Diagram of the robot](wiring.png)
 
-
 ## Demo Video
 
 In [this video](https://photos.app.goo.gl/ea5unZCozoSsS7tX8), You can see the basic operation of the robot. Here is what happens:
@@ -28,3 +27,4 @@ There are two projects in this repository. You can open this repository as a Cod
 
 - **bt_test**: This was used to test the Bluetooth capabilities over UART. Our team was responsible for presenting the functionality to the class as part of a series of technical presentations given by all the other groups in the class.
 - **wall-e**: Our robot code. We called it WALL-E since we originally wanted to 3D-print a WALL-E body and put it on the robot, but there turned out to be not enough space for turning when you put a square body in the maze!
+- **EVE**: The control software for the robot. Since the robot is WALL-E, we called this EVE! It keeps its own race time and controls (via the Bluetooth connection) when the robot starts to navigate the maze. It also automatically plots all the distance sensor data received.
