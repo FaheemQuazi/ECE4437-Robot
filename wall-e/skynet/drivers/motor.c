@@ -41,7 +41,7 @@ void Motor_Init(){  // Initializes both motors.
     GPIOPinConfigure(GPIO_PC4_M0PWM6);                      // Configures the alternate function of a GPIO Port C pin 4.
 //********************************************************
 
-    Motor_pwm_clk = SysCtlClockGet() / 64;                  // Gets the processor clock rate.
+    Motor_pwm_clk = SysCtlClockGet() / 64;                  // A fraction of the PWM clock.
     Motor_Val_Load = (Motor_pwm_clk / 100) - 1;             // Gets the period of PWM generator, measured in clock ticks.
 
 //********************PWMGenConfigure*********************
