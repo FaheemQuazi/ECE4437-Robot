@@ -28,6 +28,7 @@ void BT_PrintString(char str[]) {
 }
 
 // ======== task: UART Read ========
+// Handles reading characters off the UART bus (aka coming from Bluetooth)
 void tskBTRead(UArg arg0, UArg arg1) {
     // Commented out code in this task is for a proper commanding setup
     // We did not use it for the competition because it was taking up too much resources

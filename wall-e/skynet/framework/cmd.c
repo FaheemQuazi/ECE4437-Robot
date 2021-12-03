@@ -1,10 +1,3 @@
-/*
- * cmd.c
- *
- *  Created on: Sep 30, 2021
- *      Author: faheem
- */
-
 #include "cmd.h"
 
 COMMAND CMD_defs[] = {
@@ -21,9 +14,10 @@ COMMAND CMD_defs[] = {
     { "DD", &testStruct }
 };
 
-
+// Placeholder task to test the commanding system
 void CMD_DoNothing(UArg arg0, UArg arg1) {}
 
+// This task runs and dispatches tasks passed on by the mailbox
 void tskCMDDispatcher(UArg arg0, UArg arg1) {
     const int s = sizeof(CMD_defs);
     int i = 0;

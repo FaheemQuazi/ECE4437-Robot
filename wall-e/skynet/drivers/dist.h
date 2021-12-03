@@ -1,10 +1,3 @@
-/*
- * dist.h
- *
- *  Created on: Oct 1, 2021
- *      Author: faheem
- */
-
 #ifndef SKYNET_DRIVERS_DIST_H_
 #define SKYNET_DRIVERS_DIST_H_
 

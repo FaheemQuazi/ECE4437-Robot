@@ -1,16 +1,3 @@
-/*
- * lightsensor.c
- *
- *  Created on: Sep 29, 2021
- *      Author:
- */
-
-///------------------------------------------
-// Light Sensor Demo
-//------------------------------------------
-// TivaWare Header Files
-//------------------------------------------
-
 #include "lightsensor.h"
 
 MODBUS_PACKET dataPing;
@@ -51,6 +38,7 @@ int count = 0;
 int state = 0;
 bool isBlack;
 
+// Read the value for the light sensor - This is a clock function
 void GetLight() {
     switch (state) {
     case 0:
@@ -135,7 +123,7 @@ void detectLine() {
 // Collect and handle MODBUS data
 void tmrLSDataSender() {
     TimerIntClear(TIMER1_BASE, TimerIntStatus(TIMER1_BASE, false));
-    if (ESTOP() || sendData != true) { // Only send data if ESTOP is not set and we want to send data
+    if (ESTOP() || LS_sendData != true) { // Only send data if ESTOP is not set and we want to send data
         return;
     }
 
@@ -173,6 +161,7 @@ void tskLSPrintData(UArg a0, UArg a1) {
     }
 }
 
+// Helper function to calibrate the light sensor
 void getLineCount(UArg a0, UArg a1) {
     char *out = (char *)malloc(16*sizeof(char));
 
@@ -181,6 +170,7 @@ void getLineCount(UArg a0, UArg a1) {
     free(out);
 }
 
+// Unused function to test printing the data structure
 void testStruct(UArg a0, UArg a1) {
     BT_PrintString(dataPing.raw);
 }

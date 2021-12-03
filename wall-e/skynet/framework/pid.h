@@ -1,10 +1,3 @@
-/*
- * pid.h
- *
- *  Created on: Oct 18, 2021
- *      Author: Caleb Ballard
- */
-
 #ifndef SKYNET_FRAMEWORK_PID_H_
 #define SKYNET_FRAMEWORK_PID_H_
 

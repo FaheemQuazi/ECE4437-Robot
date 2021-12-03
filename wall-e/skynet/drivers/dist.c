@@ -1,14 +1,3 @@
-/*
- * dist.c
- *
- *  Created on: Oct 1, 2021
- *      Author: faheem
- *
- *  Pins:
- *  - PD0: AIN7    -> Dist R
- *  - PD1: AIN6    -> Dist F
- */
-
 #include "dist.h"
 
 void Dist_Init() {
@@ -38,12 +27,14 @@ void Dist_Init() {
 }
 
 // ==== SWI ====
+// Stores the latest read ADC values for the distance sensors
 void swiDistTrigger() {
     ADCSequenceDataGet(ADC0_BASE, 3, &DistF);
     ADCSequenceDataGet(ADC1_BASE, 3, &DistR);
 }
 
 // ==== HWI ====
+// These are the ISRs for the ADC interrupts
 void hwiDistF() {
     ADCIntClear(ADC0_BASE, 3);
     Swi_post(swiDist);
@@ -54,6 +45,7 @@ void hwiDistR() {
 }
 
 // ==== Clock ====
+// Trigger the ADC to take a reading
 void clkDistTrigger() {
     ADCProcessorTrigger(ADC0_BASE, 3);
     ADCProcessorTrigger(ADC1_BASE, 3);

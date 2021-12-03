@@ -1,10 +1,3 @@
-/*
- * led.h
- *
- *  Created on: Sep 30, 2021
- *      Author: faheem
- */
-
 #ifndef SKYNET_DRIVERS_LED_H_
 #define SKYNET_DRIVERS_LED_H_
 

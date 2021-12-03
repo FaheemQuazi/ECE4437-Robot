@@ -1,10 +1,3 @@
-/*
- * motor.c
- *
- *  Created on: Oct 5, 2021
- *      Author: Caleb
- *
- */
 #include "motor.h" // Includes the motor header file.
 
 void Motor_Init(){  // Initializes both motors.

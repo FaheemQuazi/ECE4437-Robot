@@ -10,6 +10,7 @@ void RaceTimer_Init() {
     timesincestart = 0;
 }
 
+// This runs every TIMER2 Tick to keep track of race time
 void GetTimer() {
     TimerIntClear(TIMER2_BASE, TimerIntStatus(TIMER2_BASE, false));
 

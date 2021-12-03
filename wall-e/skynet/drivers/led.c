@@ -1,9 +1,4 @@
 /*
- * led.c
- *
- *  Created on: Sep 30, 2021
- *      Author: faheem
- *
  * This file was used to create helper functions to toggle on or off the onboard LED
  *
  * They aren't really used in the code, but they are used in the command system,

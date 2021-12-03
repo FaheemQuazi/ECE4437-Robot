@@ -1,10 +1,3 @@
-/*
- * cmd.h
- *
- *  Created on: Sep 30, 2021
- *      Author: faheem
- */
-
 #ifndef SKYNET_FRAMEWORK_CMD_H_
 #define SKYNET_FRAMEWORK_CMD_H_
 
