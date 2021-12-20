@@ -1,14 +1,14 @@
 # ECE4437-Robot
 
-Caleb Ballard, Aruba Bukhari
+Caleb Ballard, Aruba Bukhari, Faheem Quazi
 
 ## Intro
 
-This code is for a robot which was built for ECE 4437 at the University of Houston. The objective of the robot is to navigate a maze.
+This code is for a robot which was built for ECE 4437 at the University of Houston. The primary objective of the robot is to navigate a maze. Our robot ultimately placed third in the final competition!
 
 ## Hardware
 
-The core component of this project was a Texas Instruments Tiva C (EK-TM4C123GXL). THe following wiring diagram shows the general layout of all components:
+The core component of this project was a Texas Instruments Tiva C (EK-TM4C123GXL). The following wiring diagram shows the general layout of all components:
 
 ![Wiring Diagram of the robot](wiring.png)
 
